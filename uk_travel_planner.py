@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import folium
-from streamlit_folium import folium_static
+from streamlit_folium import st_folium
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
@@ -409,7 +409,7 @@ with tab2:
         tooltip="London → Edinburgh"
     ).add_to(m)
     
-    folium_static(m)
+    st_folium(m, width=700, height=500)
     
     # Legend
     col1, col2 = st.columns(2)
