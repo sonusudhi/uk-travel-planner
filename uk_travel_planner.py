@@ -6,16 +6,17 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import numpy as np
+from PIL import Image
 
 # Page configuration
 st.set_page_config(
-    page_title="UK Christmas Travel Planner",
+    page_title="UK Christmas Travel Planner - Group of 4",
     page_icon="🇬🇧",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS
+# Custom CSS (keeping minimal styling)
 st.markdown("""
 <style>
     .main-header {
@@ -25,14 +26,6 @@ st.markdown("""
         margin-bottom: 2rem;
         font-weight: bold;
     }
-    .section-header {
-        font-size: 1.8rem;
-        color: #2c5aa0;
-        margin-top: 2rem;
-        margin-bottom: 1rem;
-        border-bottom: 3px solid #2c5aa0;
-        padding-bottom: 0.5rem;
-    }
     .cost-box {
         background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
         padding: 1.5rem;
@@ -41,35 +34,6 @@ st.markdown("""
         margin: 1rem 0;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
-    .day-card {
-        background: #ffffff;
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        margin: 1.5rem 0;
-        border-left: 6px solid #ff6b6b;
-    }
-    .location-tag {
-        background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-        color: white;
-        padding: 0.4rem 1rem;
-        border-radius: 25px;
-        font-size: 0.85rem;
-        font-weight: bold;
-        display: inline-block;
-        margin: 0.3rem;
-        box-shadow: 0 2px 10px rgba(255,107,107,0.3);
-    }
-    .time-tag {
-        background: linear-gradient(45deg, #4ecdc4, #44a08d);
-        color: white;
-        padding: 0.3rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        display: inline-block;
-        margin-right: 0.8rem;
-        box-shadow: 0 2px 8px rgba(78,205,196,0.3);
-    }
     .weather-card {
         background: linear-gradient(135deg, #74b9ff, #0984e3);
         color: white;
@@ -77,14 +41,6 @@ st.markdown("""
         border-radius: 10px;
         margin: 0.5rem 0;
         text-align: center;
-    }
-    .tip-box {
-        background: #fff3cd;
-        border: 1px solid #ffeaa7;
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-        border-left: 4px solid #fdcb6e;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -95,21 +51,39 @@ if 'generated_itinerary' not in st.session_state:
 
 # Title
 st.markdown('<h1 class="main-header">🇬🇧 UK Christmas Travel Planner</h1>', unsafe_allow_html=True)
-st.markdown('<p style="text-align: center; font-size: 1.3rem; color: #666; font-style: italic;">Kochi → London → Edinburgh → Kochi | December 25, 2024 - January 3, 2025</p>', unsafe_allow_html=True)
+st.markdown('<p style="text-align: center; font-size: 1.3rem; color: #666; font-style: italic;">Group of 4: Couple + 2 Individuals | Dec 28, 2024 - Jan 4, 2025</p>', unsafe_allow_html=True)
+
+# Group photo section - loads from GitHub
+st.markdown("## 👥 Meet Your Travel Group")
+
+try:
+    # Load the uploaded photo from GitHub
+    image = Image.open("1.jpg")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image(image, caption="Your Travel Group of 4", use_column_width=True)
+        st.success("🎉 Your Amazing Travel Group! 1 Couple + 2 Individuals ready for UK Christmas adventure!")
+except:
+    # Fallback if image not found
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.info("📸 Upload 1.jpg to your GitHub repository to see your group photo here!")
+        st.write("**Group:** 4 people (1 Couple + 2 Individuals)")
 
 # Sidebar
 with st.sidebar:
-    st.markdown("## ✈️ Trip Customization")
+    st.markdown("## ✈️ Trip Details")
     
-    # Group details
+    # Fixed group information
     st.markdown("### 👥 Group Information")
-    group_size = st.number_input("Group Size", min_value=1, max_value=20, value=4)
+    st.info("**Fixed Group Size: 4 People**\n- 1 Couple\n- 2 Individuals")
     
+    # Travel preferences
+    st.markdown("### 🎯 Customize Your Experience")
     budget_per_person = st.selectbox("Budget Range (per person)", 
-                                   ["Budget (£800-1200)", "Mid-range (£1200-2000)", "Luxury (£2000+)"])
+                                   ["Budget (£800-1200)", "Mid-range (£1200-2000)", "Luxury (£2000+)"],
+                                   index=1)
     
-    # Interests
-    st.markdown("### 🎯 Travel Preferences")
     interests = st.multiselect("Select Primary Interests", 
                               ["Historical Sites", "Museums", "Shopping", "Nightlife", 
                                "Food & Dining", "Architecture", "Parks & Nature", 
@@ -119,9 +93,6 @@ with st.sidebar:
     activity_level = st.selectbox("Activity Level", 
                                 ["Relaxed", "Moderate", "Active", "Very Active"],
                                 index=1)
-    
-    transport_pref = st.selectbox("Transport Preference", 
-                                 ["Public Transport", "Mixed", "Taxis/Uber"])
     
     show_weather = st.checkbox("Show Weather Information", value=True)
 
@@ -183,201 +154,263 @@ def filter_attractions(attractions_dict, selected_interests):
 # Main tabs
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📅 Day-by-Day Itinerary", 
+    "✈️ Flight Details", 
     "🗺️ Interactive Map", 
     "💰 Cost Breakdown", 
-    "✈️ Flight Information", 
     "📋 Travel Essentials"
 ])
 
-# Tab 1: Itinerary
+# Tab 1: Clean Itinerary Format
 with tab1:
-    st.markdown('<h2 class="section-header">📅 Detailed Daily Itinerary</h2>', unsafe_allow_html=True)
+    st.markdown("# 📅 Your Personalized 8-Day Itinerary")
     
     # Generate button
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("🎯 Generate Personalized Itinerary"):
             st.session_state.generated_itinerary = True
-            st.success("✅ Itinerary generated based on your preferences!")
+            st.success("✅ Itinerary generated for your group of 4!")
     
     if st.session_state.generated_itinerary or True:
+        
         # Day 1: Arrival
-        st.markdown("""
-        <div class="day-card">
-            <h3>🎄 Day 1: December 25 - Christmas Arrival in London</h3>
-            <span class="location-tag">LONDON</span>
-            
-            <div style="margin-top: 1.5rem;">
-                <p><span class="time-tag">06:00-10:00</span><strong>Flight Arrival</strong></p>
-                <ul>
-                    <li>✈️ International flight arrival from Kochi</li>
-                    <li>🛂 Immigration and customs</li>
-                    <li>🚂 Airport transfer to central London</li>
-                </ul>
-                
-                <p><span class="time-tag">11:00-15:00</span><strong>Check-in & Gentle Start</strong></p>
-                <ul>
-                    <li>🏠 Hotel check-in and freshen up</li>
-                    <li>🍽️ Traditional Christmas lunch</li>
-                    <li>🎄 Westminster Christmas decorations walk</li>
-                </ul>
-                
-                <p><span class="time-tag">15:00-19:00</span><strong>Light Exploration</strong></p>
-                <ul>
-                    <li>🏰 Buckingham Palace exterior</li>
-                    <li>🌳 Hyde Park Winter Wonderland (if open)</li>
-                    <li>📸 Christmas photo session</li>
-                </ul>
-                
-                <p><span class="time-tag">19:00+</span><strong>Christmas Evening</strong></p>
-                <ul>
-                    <li>🍽️ Christmas dinner with host</li>
-                    <li>🛌 Early rest for jet lag recovery</li>
-                </ul>
-            </div>
-            
-            <div style="margin-top: 1rem; padding: 1rem; background: #f0f8ff; border-radius: 8px;">
-                <strong>💡 Day 1 Tips:</strong> Take it easy - many attractions closed on Christmas Day
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown("## ✈️ Day 1: Saturday December 28 - Arrival in London")
+        st.markdown("**Location:** Kochi → London")
+        
+        st.markdown("### 🛫 20:10 IST - Departure from Kochi")
+        st.write("- ✈️ Flight departure from Kochi (COK)")
+        st.write("- 👫 Group check-in for 4 people")
+        st.write("- 🍽️ In-flight meals and entertainment")
+        st.write("- 📱 Keep family updated on departure")
+        
+        st.markdown("### 🛬 09:45 GMT - Sunday Morning Arrival in London")
+        st.write("- 🛬 Landing at London airport")
+        st.write("- 🛂 Immigration and customs for group")
+        st.write("- 💷 Currency exchange and UK SIM cards")
+        st.write("- 🚂 Airport transfer to central London")
+        
+        st.markdown("### 🏨 11:00-15:00 - London Arrival & Settlement")
+        st.write("- 🏨 Hotel check-in (rooms for couple + 2 individuals)")
+        st.write("- 🚿 Freshen up after long flight")
+        st.write("- 🍽️ First British meal together")
+        st.write("- 🌆 Gentle walk around local area")
+        
+        st.markdown("### 🌃 15:00+ - Light Exploration & Rest")
+        st.write("- 🏰 Quick visit to nearby attraction")
+        st.write("- 📸 First group photos in London")
+        st.write("- 🛌 Early rest to combat jet lag")
+        st.write("- 📋 Plan next day activities")
+        
+        st.info("💡 Day 1 Tips: Take it easy after the overnight flight. Focus on rest and gentle exploration.")
+        st.markdown("---")
         
         # London Days
-        london_days = [
-            {
-                "day": 2, "date": "December 26", "title": "Boxing Day - Historic London",
-                "morning": ["Tower of London", "Tower Bridge area"],
-                "afternoon": ["Westminster Abbey", "Big Ben photos"],
-                "evening": ["Traditional pub dinner in Southwark"]
-            },
-            {
-                "day": 3, "date": "December 27", "title": "Royal & Cultural London",
-                "morning": ["Buckingham Palace", "St. James's Park"],
-                "afternoon": ["British Museum", "Covent Garden"],
-                "evening": ["West End show booking"]
-            },
-            {
-                "day": 4, "date": "December 28", "title": "Modern & Traditional Mix",
-                "morning": ["St. Paul's Cathedral", "City of London"],
-                "afternoon": ["Tate Modern", "Borough Market"],
-                "evening": ["Thames dinner cruise"]
-            },
-            {
-                "day": 5, "date": "December 29", "title": "Markets & Shopping",
-                "morning": ["Camden Market", "Regent's Park"],
-                "afternoon": ["Oxford Street shopping", "Hyde Park"],
-                "evening": ["Chinatown dinner"]
-            },
-            {
-                "day": 6, "date": "December 30", "title": "Journey to Edinburgh",
-                "morning": ["Final London breakfast", "King's Cross station"],
-                "afternoon": ["Train to Edinburgh (4.5 hours)"],
-                "evening": ["Edinburgh arrival, Royal Mile walk"]
-            }
-        ]
+        st.markdown("## 🏴󠁧󠁢󠁥󠁮󠁧󠁿 Day 2: December 29 - Historic London Discovery")
+        st.markdown("**Location:** London")
         
-        for day_info in london_days:
-            st.markdown(f"""
-            <div class="day-card">
-                <h3>🏴󠁧󠁢󠁥󠁮󠁧󠁿 Day {day_info['day']}: {day_info['date']} - {day_info['title']}</h3>
-                <span class="location-tag">{'LONDON → EDINBURGH' if 'Journey' in day_info['title'] else 'LONDON'}</span>
-                
-                <div style="margin-top: 1.5rem;">
-                    <p><span class="time-tag">09:00-12:30</span><strong>Morning</strong></p>
-                    <ul>
-                        {"".join(f"<li>🏛️ {activity}</li>" for activity in day_info['morning'])}
-                    </ul>
-                    
-                    <p><span class="time-tag">13:00-17:30</span><strong>Afternoon</strong></p>
-                    <ul>
-                        {"".join(f"<li>🎯 {activity}</li>" for activity in day_info['afternoon'])}
-                    </ul>
-                    
-                    <p><span class="time-tag">18:00+</span><strong>Evening</strong></p>
-                    <ul>
-                        {"".join(f"<li>🌃 {activity}</li>" for activity in day_info['evening'])}
-                    </ul>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+        st.markdown("### 🌅 09:00-12:30 - Morning Adventures")
+        st.write("- 🏛️ Tower of London")
+        st.write("- 🏛️ Tower Bridge area")
+        st.write("- ☕ Coffee break for the group")
+        
+        st.markdown("### 🌞 13:00-17:30 - Afternoon Exploration")
+        st.write("- 🍽️ Lunch at recommended restaurant")
+        st.write("- 🎯 Westminster Abbey")
+        st.write("- 🎯 Big Ben & Parliament")
+        
+        st.markdown("### 🌃 18:00+ - Evening Experience")
+        st.write("- 🌃 Traditional pub dinner")
+        st.write("- 🌃 Group photos by Thames")
+        st.markdown("---")
+        
+        st.markdown("## 🏴󠁧󠁢󠁥󠁮󠁧󠁿 Day 3: December 30 - Royal & Cultural London")
+        st.markdown("**Location:** London")
+        
+        st.markdown("### 🌅 09:00-12:30 - Morning Adventures")
+        st.write("- 🏛️ Buckingham Palace")
+        st.write("- 🏛️ St. James's Park")
+        st.write("- ☕ Coffee break for the group")
+        
+        st.markdown("### 🌞 13:00-17:30 - Afternoon Exploration")
+        st.write("- 🍽️ Lunch at recommended restaurant")
+        st.write("- 🎯 British Museum")
+        st.write("- 🎯 Covent Garden")
+        
+        st.markdown("### 🌃 18:00+ - Evening Experience")
+        st.write("- 🌃 West End show booking")
+        st.write("- 🌃 Late dinner in Theatreland")
+        st.markdown("---")
+        
+        st.markdown("## 🏴󠁧󠁢󠁥󠁮󠁧󠁿 Day 4: December 31 - New Year's Eve in London")
+        st.markdown("**Location:** London")
+        
+        st.markdown("### 🌅 09:00-12:30 - Morning Adventures")
+        st.write("- 🏛️ St. Paul's Cathedral")
+        st.write("- 🏛️ City of London")
+        st.write("- ☕ Coffee break for the group")
+        
+        st.markdown("### 🌞 13:00-17:30 - Afternoon Exploration")
+        st.write("- 🍽️ Lunch at recommended restaurant")
+        st.write("- 🎯 London Eye")
+        st.write("- 🎯 South Bank walk")
+        
+        st.markdown("### 🌃 18:00+ - Evening Experience")
+        st.write("- 🌃 New Year's Eve celebration")
+        st.write("- 🌃 Fireworks by Thames")
+        
+        st.warning("🎉 New Year's Eve Special: Book restaurants in advance! Dress warmly for outdoor celebrations. Consider Thames boat party.")
+        st.markdown("---")
+        
+        # Travel to Edinburgh
+        st.markdown("## 🚂 Day 5: January 1, 2025 - New Year's Day Travel to Edinburgh")
+        st.markdown("**Location:** London → Edinburgh")
+        
+        st.markdown("### 🌅 09:00-11:00 - New Year's Morning")
+        st.write("- 🥳 Recovery breakfast after New Year's celebration")
+        st.write("- 🏨 Hotel check-out")
+        st.write("- 🚂 King's Cross station departure")
+        
+        st.markdown("### 🚄 11:30-16:00 - Journey to Scotland")
+        st.write("- 🚄 Train journey to Edinburgh (4.5 hours)")
+        st.write("- 🥪 Lunch on board")
+        st.write("- 🌄 Scenic views of English & Scottish countryside")
+        
+        st.markdown("### 🏴󠁧󠁢󠁳󠁣󠁴󠁿 16:30+ - Edinburgh Arrival")
+        st.write("- 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Arrival at Edinburgh Waverley")
+        st.write("- 🏨 Hotel check-in")
+        st.write("- 🍽️ First Scottish dinner")
+        st.write("- 🌃 Evening Royal Mile stroll")
+        st.markdown("---")
         
         # Edinburgh Days
-        edinburgh_days = [
-            {
-                "day": 7, "date": "December 31", "title": "Hogmanay Preparation",
-                "morning": ["Edinburgh Castle", "Royal Mile"],
-                "afternoon": ["Holyrood Palace", "Arthur's Seat"],
-                "evening": ["Hogmanay Street Party", "Midnight fireworks"]
-            },
-            {
-                "day": 8, "date": "January 1", "title": "New Year's Day",
-                "morning": ["Recovery brunch", "Calton Hill"],
-                "afternoon": ["National Gallery", "Princes Street"],
-                "evening": ["Scottish folk music", "Traditional dinner"]
-            },
-            {
-                "day": 9, "date": "January 2", "title": "Final Edinburgh Day",
-                "morning": ["Last shopping", "Grassmarket"],
-                "afternoon": ["Camera Obscura", "Christmas Market"],
-                "evening": ["Farewell dinner", "Pack for departure"]
-            }
-        ]
+        st.markdown("## 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Day 6: January 2 - Edinburgh Castle & History")
+        st.markdown("**Location:** Edinburgh")
         
-        for day_info in edinburgh_days:
-            st.markdown(f"""
-            <div class="day-card">
-                <h3>🏴󠁧󠁢󠁳󠁣󠁴󠁿 Day {day_info['day']}: {day_info['date']} - {day_info['title']}</h3>
-                <span class="location-tag">EDINBURGH</span>
-                
-                <div style="margin-top: 1.5rem;">
-                    <p><span class="time-tag">09:00-12:30</span><strong>Morning</strong></p>
-                    <ul>
-                        {"".join(f"<li>🏴󠁧󠁢󠁳󠁣󠁴󠁿 {activity}</li>" for activity in day_info['morning'])}
-                    </ul>
-                    
-                    <p><span class="time-tag">13:30-17:30</span><strong>Afternoon</strong></p>
-                    <ul>
-                        {"".join(f"<li>🏴󠁧󠁢󠁳󠁣󠁴󠁿 {activity}</li>" for activity in day_info['afternoon'])}
-                    </ul>
-                    
-                    <p><span class="time-tag">18:00+</span><strong>Evening</strong></p>
-                    <ul>
-                        {"".join(f"<li>🌃 {activity}</li>" for activity in day_info['evening'])}
-                    </ul>
-                </div>
-                
-                {"<div style='margin-top: 1rem; padding: 1rem; background: #ffe6e6; border-radius: 8px;'><strong>🎉 Hogmanay Note:</strong> Book in advance! Dress warmly for outdoor celebrations.</div>" if "Hogmanay" in day_info['title'] else ""}
-            </div>
-            """, unsafe_allow_html=True)
+        st.markdown("### 🌅 09:00-12:30 - Morning")
+        st.write("- 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Edinburgh Castle")
+        st.write("- 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Royal Mile exploration")
         
-        # Final Day
-        st.markdown("""
-        <div class="day-card">
-            <h3>✈️ Day 10: January 3 - Departure Day</h3>
-            <span class="location-tag">EDINBURGH → KOCHI</span>
-            
-            <div style="margin-top: 1.5rem;">
-                <p><span class="time-tag">08:00-11:00</span><strong>Final Preparations</strong></p>
-                <ul>
-                    <li>🏨 Hotel check-out</li>
-                    <li>☕ Scottish breakfast</li>
-                    <li>🛍️ Last-minute shopping</li>
-                </ul>
-                
-                <p><span class="time-tag">11:00-14:00</span><strong>Departure</strong></p>
-                <ul>
-                    <li>🚌 Airport transfer</li>
-                    <li>✈️ Flight to Kochi</li>
-                </ul>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown("### 🌞 13:30-17:30 - Afternoon")
+        st.write("- 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Holyrood Palace")
+        st.write("- 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Arthur's Seat hike")
+        
+        st.markdown("### 🌃 18:00+ - Evening")
+        st.write("- 🌃 Traditional Scottish dinner")
+        st.write("- 🌃 Folk music session")
+        st.markdown("---")
+        
+        st.markdown("## 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Day 7: January 3 - Final Scottish Experience")
+        st.markdown("**Location:** Edinburgh")
+        
+        st.markdown("### 🌅 09:00-12:30 - Morning")
+        st.write("- 🏴󠁧󠁢󠁳󠁣󠁴󠁿 National Gallery")
+        st.write("- 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Princes Street shopping")
+        
+        st.markdown("### 🌞 13:30-17:30 - Afternoon")
+        st.write("- 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Camera Obscura")
+        st.write("- 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Last-minute shopping")
+        
+        st.markdown("### 🌃 18:00+ - Evening")
+        st.write("- 🌃 Farewell dinner")
+        st.write("- 🌃 Pack for early departure")
+        st.markdown("---")
+        
+        # Final Departure Day
+        st.markdown("## ✈️ Day 8: January 4, 2025 - Departure Day")
+        st.markdown("**Location:** Edinburgh → Bengaluru")
+        
+        st.markdown("### 🌙 03:00-05:30 - Early Morning Departure")
+        st.write("- ⏰ Very early wake-up call")
+        st.write("- 🏨 Hotel check-out")
+        st.write("- 🚌 Airport transfer (allow extra time)")
+        st.write("- ✈️ Flight check-in for group")
+        
+        st.markdown("### 🛫 06:05 GMT - Flight Departure")
+        st.write("- 🛫 Departure from Edinburgh")
+        st.write("- 🍽️ In-flight meals")
+        st.write("- 📱 Share travel memories")
+        
+        st.markdown("### 🛬 01:50+1 IST - Arrival in Bengaluru")
+        st.write("- 🏠 Safe arrival in India")
+        st.write("- 📸 Share photos with family")
+        st.write("- 💭 Amazing UK memories created!")
+        
+        st.success("✅ Departure Tips: Pack souvenirs carefully, keep receipts for customs, arrive at airport 3 hours early for international flight.")
 
-# Tab 2: Interactive Map
+# Tab 2: Flight Details (Clean Format)
 with tab2:
-    st.markdown('<h2 class="section-header">🗺️ Interactive Travel Map</h2>', unsafe_allow_html=True)
+    st.markdown("# ✈️ Confirmed Flight Information")
     
-    # Filter attractions
+    # Outbound Flight
+    st.markdown("## 🛫 OUTBOUND FLIGHT")
+    st.markdown("### Kochi (COK) → London (LHR/LGW)")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write("**Date:** Saturday, December 28, 2024")
+        st.write("**Departure:** 20:10 IST")
+        st.write("**Arrival:** 09:45 GMT (Next Day)")
+        st.write("**Flight Duration:** ~13-15 hours (with connections)")
+    
+    with col2:
+        st.metric("Total Return Cost", "£600", "Per person")
+        st.write("**Passengers:** 4 People")
+        st.write("**Group:** 1 Couple + 2 Individuals")
+    
+    # Return Flight
+    st.markdown("## 🛬 RETURN FLIGHT")
+    st.markdown("### Edinburgh (EDI) → Bengaluru (BLR)")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write("**Date:** Saturday, January 4, 2025")
+        st.write("**Departure:** 06:05 GMT")
+        st.write("**Arrival:** 01:50+1 IST (Next Day)")
+        st.write("**Flight Duration:** ~19-21 hours (with connections)")
+    
+    with col2:
+        st.metric("Return Ticket Included", "£600", "Total per person")
+        st.write("**Final Destination:** Bengaluru")
+        st.write("**Early departure - 6:05 AM**")
+    
+    # Total Flight Cost Summary
+    st.markdown("## 💰 Flight Cost Summary")
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Per Person (Return)", "£600", "Complete round trip")
+    with col2:
+        st.metric("Total Group Cost", "£2,400", "4 people × £600")
+    with col3:
+        st.metric("Cost in INR", "₹2,52,000", "Approx @₹105/£")
+    
+    # Important Flight Notes
+    st.markdown("## ⚠️ Important Flight Information")
+    
+    st.markdown("### 📋 Key Details:")
+    st.write("- ✅ **Open-jaw routing:** Kochi → London, Edinburgh → Bengaluru")
+    st.write("- ✅ **Group booking:** 4 passengers traveling together")
+    st.write("- ✅ **Early departure:** 6:05 AM requires 3:00 AM hotel departure")
+    st.write("- ✅ **Return ticket cost:** £600 includes both outbound and return flights")
+    st.write("- ✅ **Overnight flight:** Saturday night departure, Sunday morning arrival")
+    
+    st.markdown("### 🎒 Booking Checklist:")
+    st.checkbox("Seat selection for group (couple together, individuals nearby)")
+    st.checkbox("Meal preferences specified for all passengers")
+    st.checkbox("Baggage allowance confirmed (typically 30kg international)")
+    st.checkbox("Travel insurance purchased for all 4 people")
+    st.checkbox("Airport transfers booked for group transportation")
+    
+    st.markdown("### 📱 Pre-Flight Actions:")
+    st.write("- **Web check-in:** 24-48 hours before departure")
+    st.write("- **Seat assignments:** Ensure couple sits together")
+    st.write("- **Special requests:** Meals, assistance, etc.")
+    st.write("- **Contact details:** Emergency contacts updated")
+
+# Tab 3: Interactive Map
+with tab3:
+    st.markdown("# 🗺️ Interactive Travel Map")
+    
     filtered_london = filter_attractions(london_attractions, interests)
     filtered_edinburgh = filter_attractions(edinburgh_attractions, interests)
     
@@ -418,11 +451,11 @@ with tab2:
     with col2:
         st.markdown("**🔵 Blue Markers:** Edinburgh Attractions")
 
-# Tab 3: Cost Breakdown
-with tab3:
-    st.markdown('<h2 class="section-header">💰 Detailed Cost Analysis</h2>', unsafe_allow_html=True)
+# Tab 4: Cost Breakdown
+with tab4:
+    st.markdown("# 💰 Complete Cost Analysis for Group of 4")
     
-    # Budget multipliers
+    # Budget multiplier
     budget_multipliers = {
         "Budget (£800-1200)": 1.0,
         "Mid-range (£1200-2000)": 1.5,
@@ -431,15 +464,23 @@ with tab3:
     
     multiplier = budget_multipliers[budget_per_person]
     
-    # Base costs per person
+    # Updated costs per person with correct flight price (£600 TOTAL return)
     base_costs = {
-        "Flights": {"Kochi → London": 350, "Edinburgh → Kochi": 400},
-        "Accommodation": {"London (5 nights)": 75*5*multiplier, "Edinburgh (3 nights)": 85*3*multiplier},
-        "Transportation": {"Transfers": 60, "London-Edinburgh train": 80, "Local transport": 50},
-        "Food": {"Meals (9 days)": 45*9*multiplier},
-        "Attractions": {"Entry fees": 150*multiplier, "Entertainment": 100*multiplier},
+        "Flights": {"Return flights (COK-LHR-EDI-BLR)": 600},  # Total return cost
+        "Accommodation": {
+            "London (3 nights)": 85*3*multiplier, 
+            "Edinburgh (2 nights)": 90*2*multiplier,
+            "Room arrangements": 50  # Extra cost for couple room + 2 individual rooms
+        },
+        "Transportation": {
+            "Airport transfers": 70, 
+            "London-Edinburgh train": 85, 
+            "Local transport": 40
+        },
+        "Food": {"Meals (7 days)": 50*7*multiplier},
+        "Attractions": {"Entry fees": 120*multiplier, "Entertainment": 80*multiplier},
         "Shopping": {"Souvenirs": 150},
-        "Miscellaneous": {"Emergency fund": 100}
+        "Miscellaneous": {"Emergency fund": 100, "Group expenses": 75}
     }
     
     # Calculate totals
@@ -465,216 +506,258 @@ with tab3:
     with col2:
         st.markdown(f"""
         <div class="cost-box">
-            <h3>💵 Cost Summary</h3>
+            <h3>💵 Group Cost Summary</h3>
             <h2>£{total_per_person:,.0f}</h2>
             <p><strong>Per Person</strong></p>
             
-            <h2>£{total_per_person * group_size:,.0f}</h2>
-            <p><strong>Group of {group_size}</strong></p>
+            <h2>£{total_per_person * 4:,.0f}</h2>
+            <p><strong>Total for Group of 4</strong></p>
             
-            <p><em>{budget_per_person}</em></p>
+            <hr>
+            <h3>₹{total_per_person * 4 * 105:,.0f}</h3>
+            <p><strong>Total in Indian Rupees</strong></p>
+            <small>@ ₹105 per £1</small>
         </div>
         """, unsafe_allow_html=True)
     
-    # Detailed breakdown
-    st.markdown("### 📊 Detailed Breakdown")
+    # Detailed breakdown for group of 4
+    st.markdown("## 📊 Detailed Cost Breakdown (Group of 4)")
     breakdown_data = []
     for category, items in base_costs.items():
         for item, cost in items.items():
             breakdown_data.append({
                 "Category": category,
                 "Item": item,
-                "Cost per Person": f"£{cost:.0f}",
-                f"Total for {group_size} people": f"£{cost * group_size:.0f}"
+                "Per Person": f"£{cost:.0f}",
+                "Total (4 people)": f"£{cost * 4:.0f}",
+                "INR (Total)": f"₹{cost * 4 * 105:.0f}"
             })
     
     df = pd.DataFrame(breakdown_data)
     st.dataframe(df, use_container_width=True)
-
-# Tab 4: Flight Information
-with tab4:
-    st.markdown('<h2 class="section-header">✈️ Flight Planning Guide</h2>', unsafe_allow_html=True)
     
-    # Flight information
-    col1, col2 = st.columns(2)
+    # Room arrangement explanation
+    st.markdown("## 🏨 Accommodation Arrangements")
+    col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.markdown("""
-        ### 🛫 Outbound Flight
-        **Route:** Kochi → London  
-        **Date:** December 25, 2024  
-        **Airlines:** Qatar Airways, Emirates, Oman Air  
-        **Cost:** £300-450 per person  
-        **Duration:** 9-12 hours  
-        **Booking:** URGENT - Book immediately!
-        """)
+        st.markdown("**London (3 nights)**")
+        st.write("- 1 Double room for couple")
+        st.write("- 2 Single rooms for individuals")
+        st.write("- Central location preferred")
     
     with col2:
-        st.markdown("""
-        ### 🛬 Return Flight
-        **Route:** Edinburgh → Kochi  
-        **Date:** January 3, 2025  
-        **Airlines:** Qatar Airways, Emirates, British Airways  
-        **Cost:** £350-500 per person  
-        **Duration:** 11-14 hours  
-        **Connection:** Doha, Dubai, Amsterdam
-        """)
+        st.markdown("**Edinburgh (2 nights)**")
+        st.write("- 1 Double room for couple")
+        st.write("- 2 Single rooms for individuals")
+        st.write("- Near Royal Mile")
     
-    # Booking tips
-    st.markdown("### ✅ Flight Booking Strategy")
-    booking_tips = [
-        "🔥 **URGENT**: Christmas flights sell out - book within 48 hours",
-        "💳 **Payment**: Use credit cards for protection",
-        "🎫 **Seats**: Book together for group travel",
-        "🧳 **Baggage**: Check allowances (30kg typical)",
-        "🛡️ **Insurance**: Travel insurance mandatory",
-        "📅 **Flexibility**: Dec 24/26 might be cheaper than Dec 25",
-        "🔄 **Multi-city**: Book as separate one-way tickets"
-    ]
-    
-    for tip in booking_tips:
-        st.markdown(f"- {tip}")
+    with col3:
+        st.markdown("**Cost Optimization**")
+        st.write("- Group booking discounts")
+        st.write("- Same hotel for all")
+        st.write("- Breakfast included options")
 
 # Tab 5: Travel Essentials
 with tab5:
-    st.markdown('<h2 class="section-header">📋 Travel Preparation</h2>', unsafe_allow_html=True)
+    st.markdown("# 📋 Travel Preparation for Group of 4")
     
     # Weather info
     if show_weather:
-        st.markdown("### 🌤️ Weather Forecast")
+        st.markdown("## 🌤️ Weather Forecast (Dec 28 - Jan 4)")
         col1, col2 = st.columns(2)
         
         with col1:
             st.markdown("""
             <div class="weather-card">
-                <h4>London (Dec 25-30)</h4>
-                <p><strong>🌡️ Temperature:</strong> 2-8°C</p>
+                <h4>London (Dec 28-Jan 1)</h4>
+                <p><strong>🌡️ Temperature:</strong> 3-9°C</p>
                 <p><strong>☔ Conditions:</strong> Cold, frequent rain</p>
                 <p><strong>🌅 Daylight:</strong> 8:00 AM - 4:00 PM</p>
+                <p><strong>🎆 New Year's:</strong> Outdoor celebrations!</p>
             </div>
             """, unsafe_allow_html=True)
         
         with col2:
             st.markdown("""
             <div class="weather-card">
-                <h4>Edinburgh (Dec 31-Jan 2)</h4>
-                <p><strong>🌡️ Temperature:</strong> 1-6°C</p>
+                <h4>Edinburgh (Jan 1-4)</h4>
+                <p><strong>🌡️ Temperature:</strong> 1-7°C</p>
                 <p><strong>❄️ Conditions:</strong> Very cold, possible snow</p>
                 <p><strong>🌅 Daylight:</strong> 8:30 AM - 3:45 PM</p>
+                <p><strong>🧥 Essential:</strong> Heavy winter clothing</p>
             </div>
             """, unsafe_allow_html=True)
     
-    # Packing list
-    st.markdown("### 🎒 Essential Packing List")
+    # Group-specific packing
+    st.markdown("## 🎒 Group Packing Strategy")
     
-    packing_categories = {
-        "📋 Documents": [
-            "Passport (6+ months validity)",
-            "UK visa (if required)", 
-            "Flight tickets",
-            "Travel insurance",
-            "Hotel confirmations"
-        ],
-        "🧥 Winter Clothing": [
-            "Heavy winter coat",
-            "Thermal underwear",
-            "Warm sweaters",
-            "Waterproof jacket",
-            "Warm socks and gloves",
-            "Comfortable walking shoes",
-            "Formal outfit for New Year"
-        ],
-        "🔌 Electronics": [
-            "UK power adapter (Type G)",
-            "Phone charger",
-            "Camera",
-            "Portable battery"
-        ],
-        "💊 Health Items": [
-            "Prescription medications",
-            "First aid kit",
-            "Cold medicine",
-            "Hand sanitizer"
-        ]
-    }
+    col1, col2 = st.columns(2)
     
-    for category, items in packing_categories.items():
-        with st.expander(category):
-            for item in items:
-                st.checkbox(item, key=f"pack_{item}")
+    with col1:
+        st.markdown("**👫 For the Couple:**")
+        st.write("- Share heavy items (chargers, toiletries)")
+        st.write("- One person carries group first aid")
+        st.write("- Coordinate outfit colors for photos")
+        st.write("- Shared power bank for both phones")
+        
+        st.markdown("**📱 Group Communication:**")
+        st.write("- WhatsApp group for coordination")
+        st.write("- Shared Google Photos album")
+        st.write("- One person handles group bookings")
+        st.write("- Emergency contact sharing")
     
-    # Emergency contacts
-    st.markdown("### 🚨 Emergency Information")
-    st.markdown("""
-    **Emergency Numbers:**
-    - Emergency Services: 999 or 112
-    - Non-emergency Police: 101
-    - NHS Health: 111
+    with col2:
+        st.markdown("**🎯 For Individuals:**")
+        st.write("- Personal power banks")
+        st.write("- Individual comfort items")
+        st.write("- Personal medication copies")
+        st.write("- Solo exploration backup plans")
+        
+        st.markdown("**💡 Group Benefits:**")
+        st.write("- Split taxi costs (4-way)")
+        st.write("- Group discounts at attractions")
+        st.write("- Shared meals for variety")
+        st.write("- Safety in numbers")
     
-    **Indian High Commission London:**
-    - Address: India House, Aldwych, London WC2B 4NA
-    - Phone: +44 20 7836 8484
-    """)
+    # Updated packing checklist
+    st.markdown("## ✅ Essential Items Checklist")
     
-    # Cultural tips
-    st.markdown("### 🇬🇧 Cultural Tips")
-    cultural_tips = [
-        "**Tipping:** 10-15% in restaurants if no service charge",
-        "**Queuing:** British love orderly lines - always wait your turn",
-        "**Pub Etiquette:** Order at bar, no table service",
-        "**Transport:** Stand right on escalators",
-        "**Christmas:** Many shops closed Dec 25-26"
+    st.markdown("### 📋 Documents (Each Person)")
+    st.checkbox("Passport (6+ months validity)")
+    st.checkbox("UK visa (if required)")
+    st.checkbox("Flight tickets (Kochi→London, Edinburgh→Bengaluru)")
+    st.checkbox("Travel insurance (mandatory)")
+    st.checkbox("Hotel confirmations")
+    st.checkbox("Emergency contact list")
+    st.checkbox("Copy of group itinerary")
+    
+    st.markdown("### 🧥 Winter Clothing (Per Person)")
+    st.checkbox("Heavy winter coat (waterproof)")
+    st.checkbox("Thermal underwear (2-3 sets)")
+    st.checkbox("Warm sweaters/hoodies (3-4)")
+    st.checkbox("Waterproof jacket/umbrella")
+    st.checkbox("Warm socks (8+ pairs)")
+    st.checkbox("Gloves, hat, scarf set")
+    st.checkbox("Comfortable walking boots")
+    st.checkbox("Formal outfit for New Year's Eve")
+    st.checkbox("Sleepwear for cold nights")
+    
+    st.markdown("### 🔌 Electronics & Tech")
+    st.checkbox("UK power adapter Type G (1 per person)")
+    st.checkbox("Portable phone chargers")
+    st.checkbox("Camera for group photos")
+    st.checkbox("UK SIM cards or roaming plan")
+    st.checkbox("Headphones for flights")
+    st.checkbox("Universal charging cables")
+    st.checkbox("Power bank (fully charged)")
+    
+    st.markdown("### 💊 Health & Personal")
+    st.checkbox("Prescription medications (extra supply)")
+    st.checkbox("First aid kit (shared)")
+    st.checkbox("Cold/flu medicine")
+    st.checkbox("Hand sanitizer")
+    st.checkbox("Personal hygiene items")
+    st.checkbox("Sunglasses")
+    st.checkbox("Lip balm and moisturizer")
+    st.checkbox("Travel-sized toiletries")
+    
+    # Group coordination tips
+    st.markdown("## 👥 Group Travel Tips")
+    
+    group_tips = [
+        "**👫 Couple Coordination:** Book seats together, share luggage space efficiently",
+        "**🎯 Individual Freedom:** Plan some solo time, respect different interests",
+        "**💰 Money Management:** Use group expense tracking app (Splitwise)",
+        "**📱 Stay Connected:** Create WhatsApp group, share live locations",
+        "**🏨 Room Strategy:** Couple in double room, individuals in singles nearby",
+        "**🍽️ Dining:** Mix group meals with individual choices",
+        "**📸 Photography:** Designate group photographer, share photos daily",
+        "**🚶‍♂️ Walking Pace:** Accommodate different fitness levels",
+        "**⏰ Punctuality:** Set group meeting times with 10-minute buffer",
+        "**🛍️ Shopping:** Coordinate gift shopping, share souvenir ideas"
     ]
     
-    for tip in cultural_tips:
-        st.markdown(f"- {tip}")
+    for tip in group_tips:
+        st.write(f"- {tip}")
+    
+    # Emergency contacts
+    st.markdown("## 🚨 Emergency Information")
+    
+    st.markdown("**UK Emergency Numbers:**")
+    st.write("- Emergency Services: 999 or 112")
+    st.write("- Non-emergency Police: 101")
+    st.write("- NHS Health: 111")
+    
+    st.markdown("**Indian High Commission London:**")
+    st.write("- Address: India House, Aldwych, London WC2B 4NA")
+    st.write("- Phone: +44 20 7836 8484")
+    st.write("- Emergency: +44 20 7632 3149")
+    
+    st.markdown("**Group Emergency Plan:**")
+    st.write("- Keep everyone's phone numbers saved")
+    st.write("- Share hotel addresses with all members")
+    st.write("- Designate meeting points if separated")
+    st.write("- Keep some cash for emergencies")
 
 # Footer
 st.markdown("---")
 
-# Create footer with proper string formatting
+# Clean footer text
 footer_text = f"""
-<div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; margin-top: 2rem; color: white;">
-    <h2>🎄 Have a Wonderful Christmas Holiday in the UK! 🎄</h2>
-    <p style="font-size: 1.1rem;">This itinerary is customized for your group of {group_size} people with {budget_per_person} preferences.</p>
-    
-    <div style="margin-top: 1rem;">
-        <strong>📞 Emergency:</strong> UK 999 | Indian High Commission +44 20 7836 8484
-    </div>
-    
-    <p style="margin-top: 1rem; font-style: italic;">
-        Generated on: {datetime.now().strftime("%B %d, %Y at %I:%M %p")}<br>
-        <small>⚡ Powered by Advanced Travel Planning System</small>
-    </p>
-</div>
+# 🎄 Have an Amazing UK Christmas & New Year Holiday! 🎄
+
+**Customized itinerary for your group of 4 people**
+
+## 📋 Trip Summary:
+- **📅 Duration:** 8 days (Dec 28, 2024 - Jan 4, 2025)
+- **👥 Group:** 4 people (Couple + 2 individuals)
+- **✈️ Route:** Kochi → London → Edinburgh → Bengaluru
+- **💰 Budget:** {budget_per_person}
+
+## ✈️ Your Flight Details:
+- **Outbound:** Dec 28, 20:10 IST (Kochi) → Dec 29, 09:45 GMT (London)
+- **Return:** Jan 4, 06:05 GMT (Edinburgh) → Jan 5, 01:50 IST (Bengaluru)
+- **Total Cost:** £600 per person | £2,400 for group
+
+## 📞 24/7 Support Information:
+- **UK Emergency:** 999
+- **Indian High Commission London:** +44 20 7836 8484
+
+Generated on: {datetime.now().strftime("%B %d, %Y at %I:%M %p")}
+
+*⚡ Personalized for your group of 4 travelers*
 """
 
-st.markdown(footer_text, unsafe_allow_html=True)
+st.markdown(footer_text)
 
-# Quick stats in sidebar
+# Sidebar summary
 with st.sidebar:
     st.markdown("---")
-    st.markdown("### 📊 Trip Summary")
+    st.markdown("## 📊 Trip Summary")
     
     # Calculate quick stats
     total_attractions = len(filter_attractions(london_attractions, interests)) + len(filter_attractions(edinburgh_attractions, interests))
     base_cost_per_person = 1200 * budget_multipliers[budget_per_person]
     
-    st.metric("Days", "10")
-    st.metric("Cities", "2")
-    st.metric("Attractions", total_attractions)
-    st.metric("Est. Cost/Person", f"£{base_cost_per_person:.0f}")
+    st.metric("Days", "8")
+    st.metric("Cities", "2") 
+    st.metric("Group Size", "4 people")
+    st.metric("Flight Cost", "£600 per person")
+    st.metric("Total/Person", f"£{base_cost_per_person:.0f}")
+    st.metric("Group Total", f"£{base_cost_per_person * 4:.0f}")
     
-    # Quick calculator
-    st.markdown("### 💰 Quick Calculator")
-    custom_days = st.slider("Days to adjust", 7, 14, 10)
-    daily_cost = base_cost_per_person / 10
-    adjusted_cost = daily_cost * custom_days
+    # Group photo reminder
+    st.markdown("---")
+    st.markdown("## 📸 Group Photo")
+    st.info("💡 Your group photo (1.jpg) should display above if uploaded to GitHub!")
     
-    st.write(f"**{custom_days} days cost:** £{adjusted_cost:.0f} per person")
-    st.write(f"**Group total:** £{adjusted_cost * group_size:.0f}")
-
-# Performance indicator
-st.sidebar.markdown("---")
-st.sidebar.markdown("*✅ All systems operational*")
-st.sidebar.markdown("*🔄 Data updated: Real-time*")
+    # Quick reminders
+    st.markdown("## ⚠️ Important Reminders")
+    st.error("🚨 Early Flight: 6:05 AM departure = 3:00 AM hotel departure!")
+    st.info("🎯 New Destination: Return flight goes to Bengaluru, not Kochi")
+    st.success("✅ Open-jaw booking saves train cost!")
+    
+    st.markdown("---")
+    st.success("✅ Updated with your specific details")
+    st.info("📅 Dates: Dec 28, 2024 - Jan 4, 2025")
