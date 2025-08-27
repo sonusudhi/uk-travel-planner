@@ -61,7 +61,8 @@ try:
     image = Image.open("1.jpg")
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.image(image, caption="The Organizers", use_column_width=True)
+     
+        
         st.success("🎉 Ready for UK Christmas adventure!")
 except:
     # Fallback if image not found
@@ -761,5 +762,6 @@ with st.sidebar:
     st.markdown("---")
     st.success("✅ Updated with your specific details")
     st.info("📅 Dates: Dec 28, 2024 - Jan 4, 2025")
+
 
 
