@@ -62,7 +62,7 @@ try:
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.image(image, caption="", use_column_width=True)
-        st.success("🎉 Your Amazing Travel Group! 1 Couple + 2 Individuals ready for UK Christmas adventure!")
+        st.success("🎉 Your Amazing Travel Group! Ready for UK Christmas adventure!")
 except:
     # Fallback if image not found
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -761,3 +761,4 @@ with st.sidebar:
     st.markdown("---")
     st.success("✅ Updated with your specific details")
     st.info("📅 Dates: Dec 28, 2024 - Jan 4, 2025")
+
