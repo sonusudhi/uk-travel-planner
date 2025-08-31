@@ -82,7 +82,7 @@ st.markdown('''
 # Initialize session state for editable content
 if 'cost_data' not in st.session_state:
     st.session_state.cost_data = {
-        'Flights': 700,
+        'Flights': 600,
         'London Accommodation (3 nights)': 300,
         'Edinburgh/Highland Accommodation': 200,
         'Transport (all trains/buses)': 180,
@@ -341,7 +341,7 @@ with tab2:
     st.markdown("## 💰 Flight Cost Summary")
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("Per Person", "£700", "Return ticket")
+        st.metric("Per Person", "£600", "Return ticket")
     with col2:
         st.metric("Group Total", "£2,800", "4 people")
     with col3:
@@ -359,7 +359,7 @@ with tab3:
     
     with col1:
         st.markdown("### 💰 Major Expenses")
-        st.session_state.cost_data['Flights'] = st.number_input("Flights (return per person)", value=700, step=50)
+        st.session_state.cost_data['Flights'] = st.number_input("Flights (return per person)", value=600, step=50)
         st.session_state.cost_data['London Accommodation (3 nights)'] = st.number_input("London Hotels", value=300, step=25)
         st.session_state.cost_data['Edinburgh/Highland Accommodation'] = st.number_input("Scotland Hotels", value=200, step=25)
         st.session_state.cost_data['Transport (all trains/buses)'] = st.number_input("All Transport", value=180, step=25)
@@ -613,7 +613,7 @@ with tab6:
             tooltip=route["tooltip"]
         ).add_to(m)
     
-    st_folium(m, width=700, height=500)
+    st_folium(m, width=600, height=500)
     
     # Clean map legend
     st.markdown("### 🗺️ Travel Route Legend")
@@ -704,7 +704,7 @@ footer_content = f"""
 - **🎯 Highlights:** Christmas in London, Yorkshire coast, Highland railway, Edinburgh Hogmanay
 
 ### 💰 Final Cost Breakdown:
-- **✈️ Flights:** £{flight_total:,.0f} (£700 × 4 people)
+- **✈️ Flights:** £{flight_total:,.0f} (£600 × 4 people)
 - **🏨 Daily Expenses:** £{daily_total:.0f} (all accommodation, transport, attractions)
 - **💵 Grand Total:** £{grand_total:.0f} for entire group
 - **💱 INR Total:** ₹{inr_grand_total:,.0f} (@ ₹105 per £1)
@@ -731,3 +731,4 @@ footer_content = f"""
 
 st.markdown(footer_content)
 st.markdown('</div>', unsafe_allow_html=True)
+
